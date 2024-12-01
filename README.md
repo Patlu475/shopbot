@@ -1,7 +1,3 @@
-Here is an initial draft of the README file for the `shopbot` repository:
-
----
-
 # Shopbot
 
 Ai based shopping assistant built in Next.js 15.
