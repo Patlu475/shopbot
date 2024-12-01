@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .noise-overlay {
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1%, transparent 1%);
+    background-size: 4px 4px;
+  }
+}
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 272 72% 47%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 88%;
+    --input: 0 0% 89.8%;
+    --ring: 272 72% 47%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 156 100% 50%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 156 100% 50%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 156 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  
+  .text-regular {
+    @apply font-neutralFace font-normal tracking-tight;
+  }
+  
+  .text-bold {
+    @apply font-neutralFace font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .main-container {
+    @apply flex min-h-screen flex-col sm:pl-14 md:pl-16;
+  }
+  
+  .content-container {
+    @apply mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  .sidebar {
+    @apply fixed left-0 top-0 z-50 flex h-screen w-12 flex-col border-r 
+           border-white/10 bg-background/95 backdrop-blur-sm transition-all 
+           duration-300 ease-in-out md:w-14;
+  }
+  
+  .sidebar-item {
+    @apply flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs 
+           font-normal text-muted-foreground transition-all duration-200
+           hover:bg-white/10 hover:text-foreground active:scale-95;
+  }
+
+  .sidebar-item-text {
+    @apply truncate opacity-0 transition-opacity duration-200;
+  }
+  
+  .message-container {
+    @apply space-y-4 px-2 py-4 sm:space-y-6 sm:px-4 sm:py-6 lg:px-8;
+  }
+  
+  .message-input-container {
+    @apply fixed bottom-0 left-0 right-0 border-t bg-background/95 
+           backdrop-blur supports-[backdrop-filter]:bg-background/60
+           sm:left-14 md:left-16 px-2 sm:px-4;
+  }
+  
+  .welcome-container {
+    @apply flex min-h-[80vh] flex-col items-center justify-center px-2 
+           text-center sm:px-4 lg:px-8;
+  }
+}
