@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import WishlistHeader from '@/components/WishlistHeader'
-import WishlistFilterBar from '@/components/WishlistFilterBar'
+import {WishlistFilterBar} from '@/components/WishlistFilterBar'
 import WishlistGrid from '@/components/WishlistGrid'
 
 export default function WishlistsPage() {
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+  const [categoryFilter, setCategoryFilter] = useState<string>('')
   const [isSelectMode, setIsSelectMode] = useState(false)
   const [showPriceDrops, setShowPriceDrops] = useState(false)
 
@@ -15,6 +15,7 @@ export default function WishlistsPage() {
       <WishlistHeader />
       <div className="container mx-auto px-4">
         <WishlistFilterBar
+          activeFilter={categoryFilter}  // Add this line
           onCategoryFilter={setCategoryFilter}
           onSelectMode={setIsSelectMode}
           onPriceDropFilter={setShowPriceDrops}
@@ -30,4 +31,3 @@ export default function WishlistsPage() {
     </div>
   )
 }
-

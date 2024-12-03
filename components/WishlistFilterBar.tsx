@@ -1,66 +1,84 @@
 'use client'
 
 import { useState } from 'react'
-import { Filter, CheckSquare, Sparkles } from 'lucide-react'
+import { CheckSquare, Circle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface WishlistFilterBarProps {
-  onCategoryFilter: (category: string | null) => void
-  onSelectMode: (isSelectMode: boolean) => void
-  onPriceDropFilter: (showPriceDrops: boolean) => void
+  onSelectMode: (enabled: boolean) => void;
+  onCategoryFilter: (category: string) => void;
+  onPriceDropFilter: (enabled: boolean) => void;
+  activeFilter: string;
 }
 
-export default function WishlistFilterBar({
-  onCategoryFilter,
+export function WishlistFilterBar({
   onSelectMode,
-  onPriceDropFilter
+  onCategoryFilter,
+  onPriceDropFilter,
+  activeFilter,
 }: WishlistFilterBarProps) {
-  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const categories = [
+    { value: "all", label: "All Categories" },
+    { value: "clothing", label: "Clothing & Fashion" },
+    { value: "electronics", label: "Electronics" },
+    { value: "home", label: "Home & Living" },
+    { value: "beauty", label: "Beauty & Personal Care" },
+    { value: "sports", label: "Sports & Fitness" },
+    { value: "books", label: "Books & Media" },
+    { value: "toys", label: "Toys & Games" },
+    { value: "jewelry", label: "Jewelry & Accessories" },
+    { value: "automotive", label: "Automotive" },
+  ];
 
-  const handleFilterClick = (filter: string) => {
-    if (activeFilter === filter) {
-      setActiveFilter(null)
-      onCategoryFilter(null)
-      onSelectMode(false)
-      onPriceDropFilter(false)
-    } else {
-      setActiveFilter(filter)
-      if (filter === 'category') {
-        onCategoryFilter('SomeCategory') // Replace with actual category selection logic
-      } else if (filter === 'select') {
-        onSelectMode(true)
-      } else if (filter === 'priceDrops') {
-        onPriceDropFilter(true)
-      }
-    }
-  }
+  const [isSelectMode, setIsSelectMode] = useState(false);
+
+  const handleSelectClick = () => {
+    setIsSelectMode(!isSelectMode);
+    onSelectMode(!isSelectMode);
+  };
 
   return (
-    <div className="bg-gray-800 shadow-md py-2 px-4 rounded-lg mb-4">
-      <div className="flex justify-end space-x-2">
-        <Button
-          variant={activeFilter === 'category' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => handleFilterClick('category')}
-        >
-          <Filter className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={activeFilter === 'select' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => handleFilterClick('select')}
-        >
-          <CheckSquare className="h-4 w-4" />
-        </Button>
+    <div className="bg-gray-800 shadow-md py-2 px-4 rounded-lg mb-4 mt-5">
+      <div className="flex justify-end items-center space-x-2">
+        <Select onValueChange={(value) => onCategoryFilter(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.value} value={category.value}>
+                {category.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Button
           variant={activeFilter === 'priceDrops' ? 'default' : 'outline'}
-          size="icon"
-          onClick={() => handleFilterClick('priceDrops')}
+          onClick={() => onPriceDropFilter(activeFilter !== 'priceDrops')}
         >
-          <Sparkles className="h-4 w-4" />
+          Price Drops
+        </Button>
+
+        <Button
+          variant={isSelectMode ? "default" : "outline"}
+          size="icon"
+          onClick={handleSelectClick}
+        >
+          {isSelectMode ? (
+            <Circle className="h-4 w-4" />
+          ) : (
+            <CheckSquare className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import WishlistItem from './WishlistItem'
+import {WishlistItem} from './WishlistItem'
 import { Button } from '@/components/ui/button'
 
 // This is a mock data array. In a real application, you would fetch this data from an API or database.
