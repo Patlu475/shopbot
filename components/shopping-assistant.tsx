@@ -42,7 +42,7 @@ export function ShoppingAssistant() {
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
+    
       <main className="flex-1 flex flex-col items-center justify-center pl-12 sm:pl-14 md:pl-0 md:items-center md:justify-center relative">
         {showWelcome ? (
           <>

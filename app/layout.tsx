@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Sidebar } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const neutralFace = localFont({
@@ -40,6 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+            <Sidebar />
           {children}
         </ThemeProvider>
       </body>
