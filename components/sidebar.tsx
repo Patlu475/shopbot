@@ -1,16 +1,25 @@
 "use client";
 
-import { Plus, Heart, Bookmark, MessageSquareShare, Bot, ChevronLeft } from "lucide-react";
+import {
+  Plus,
+  Heart,
+  Bookmark,
+  MessageSquareShare,
+  Bot,
+  ChevronLeft,
+  MenuIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const mainNavItems = [
-  { icon: Plus, label: "New Chat" },
-  { icon: Heart, label: "Favourites" },
-  { icon: Bookmark, label: "Wishlists" },
-  { icon: MessageSquareShare, label: "Feedback" },
+  { icon: Plus, label: "New Chat", url: "/new-chat" },
+  { icon: Heart, label: "Favourites", url: "/favourites" },
+  { icon: Bookmark, label: "Wishlists", url: "/wishlists" },
+  { icon: MessageSquareShare, label: "Feedback", url: "/feedback" },
 ];
 
 const recentChats = [
@@ -25,103 +34,205 @@ export function Sidebar() {
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isExpanded) {
+        toggleSidebar();
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener("keydown", handleEscKey);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isExpanded, toggleSidebar]);
+
   return (
-    <nav 
-      className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-background/95 backdrop-blur-sm transition-[width] duration-300",
-        isExpanded ? "w-52" : "w-16 md:w-14"
-      )}
-    >
-      <div className="flex h-full flex-col flex-center p-2">
-        {/* Logo Section */}
-        <div className="relative flex items-center  gap-3 p-2">
+    <>
+      {/* Mobile Header - Only visible when sidebar is collapsed */}
+      <div className={cn(
+        "fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 md:hidden",
+        isExpanded && "hidden"
+      )}>
+        {/* Toggle Button */}
+        <button 
+          onClick={toggleSidebar}
+          className="text-white/70"
+        >
+          <MenuIcon className="h-6 w-6" />
+        </button>
+
+        {/* Center Logo */}
+        <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <Bot className="h-6 w-10 text-primary-foreground" />
+            <Bot className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className={cn(
-            "text-lg font-bold transition-opacity duration-200",
-            isExpanded ? "opacity-100" : "opacity-0"
-          )}>
-            ShopBot
-          </span>
-          {isExpanded && (
-            <button
-              onClick={toggleSidebar}
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-white/70"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-          )}
+          <span className="text-lg font-bold">ShopBot</span>
         </div>
 
-        <Separator className="my-2 bg-white/10" />
+        {/* User Avatar */}
+        <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
+          <AvatarFallback className="text-primary-foreground font-normal text-xs bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
+            P
+          </AvatarFallback>
+        </Avatar>
+      </div>
 
-        {/* Main Navigation */}
-        <div className="flex flex-col gap-1">
-          {mainNavItems.map((item, index) => (
-            <div 
-              key={index} 
+      {/* Mobile Toggle Button - Only visible when sidebar is collapsed */}
+      <div className="fixed top-0 left-0 z-[60] p-4 md:hidden">
+        <button onClick={toggleSidebar} className="text-white/70">
+          <MenuIcon className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Sidebar Nav */}
+      <nav
+        className={cn(
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-background/95 backdrop-blur-sm transition-all duration-300",
+          isExpanded
+            ? "w-[100vw] sm:w-[80vw] md:w-52" // Full width on mobile, 80% on tablet, fixed on desktop
+            : "w-0 md:w-14", // Hidden on mobile/tablet, fixed small width on desktop
+          "md:translate-x-0",
+          !isExpanded && "-translate-x-full md:translate-x-0" // Hide completely when collapsed on mobile
+        )}
+      >
+        <div className="flex h-full flex-col p-2 mt-[60px] md:mt-0">
+          {" "}
+          {/* Added top margin for mobile */}
+          {/* Logo Section */}
+          <div
+            className={cn(
+              "relative flex items-center gap-3 p-2",
+              !isExpanded && "md:flex hidden" // Hide on mobile when collapsed
+            )}
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary md:flex">
+              <Bot className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <span
               className={cn(
-                "flex w-full items-center gap-2 px-2 py-1.5",
-                index === 0 ? "text-white" : "text-white/70"
+                "text-lg font-bold transition-opacity duration-200",
+                isExpanded ? "opacity-100" : "opacity-0"
               )}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
-              <span className={cn(
-                "truncate text-xs font-normal transition-opacity duration-200",
-                isExpanded ? "opacity-100" : "opacity-0"
-              )}>{item.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Recent Chats Section */}
-        <div className="mt-4 flex-1 overflow-y-auto">
-          <h3 className={cn(
-            "px-2 text-xs font-normal text-white/70 transition-opacity duration-200",
-            isExpanded ? "opacity-100" : "opacity-0"
-          )}>
-            Recent Chats
-          </h3>
-          <div className="mt-2 flex flex-col gap-1">
-            {recentChats.map((chat, index) => (
-              <div key={index} className="flex items-center gap-2 px-2 py-1.5">
-                <span className={cn(
-                  "truncate text-xs font-normal text-white/70 transition-opacity duration-200",
-                  isExpanded ? "opacity-100" : "opacity-0"
-                )}>{chat}</span>
+              ShopBot
+            </span>
+            {isExpanded && (
+              <button
+                onClick={toggleSidebar}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-white/70"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+          <Separator className="my-2 bg-white/10" />
+          {/* Main Navigation */}
+          <div className="flex flex-col gap-1 overflow-hidden">
+            {mainNavItems.map((item, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "flex w-full items-center gap-2 px-2 py-1.5 overflow-hidden",
+                  index === 0 ? "text-white" : "text-white/70"
+                )}
+              >
+                <item.icon className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 shrink-0" />
+                <Link href={item.url} className="min-w-0 overflow-hidden">
+                  <span
+                    className={cn(
+                      "truncate text-[11px] md:text-xs lg:text-sm font-normal transition-opacity duration-200 block",
+                      isExpanded ? "opacity-100" : "opacity-0 w-0"
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* User Section with Toggle Button when collapsed */}
-        <div className="shrink-0 pt-2">
-          <Separator className="mb-2 bg-white/10" />
-          {!isExpanded && (
-            <button
-              onClick={toggleSidebar}
-              className="w-full flex items-center px-2 py-1.5 mb-2 text-white/70"
+          {/* Recent Chats Section */}
+          <div
+            className={cn(
+              "mt-4 flex-1",
+              isExpanded ? "overflow-y-auto" : "overflow-hidden"
+            )}
+          >
+            <h3
+              className={cn(
+                "px-2 text-xs font-normal text-white/70 transition-opacity duration-200",
+                isExpanded ? "opacity-100" : "opacity-0 w-0"
+              )}
             >
-              <ChevronLeft className="h-5 w-5 shrink-0 rotate-180" />
-            </button>
-          )}
-          <div className="flex items-center gap-2 p-2">
-            <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
-              <AvatarFallback className="text-primary-foreground font-normal text-xs bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
-                P
-              </AvatarFallback>
-            </Avatar>
-            <div className={cn(
-              "flex flex-col transition-opacity duration-200",
-              isExpanded ? "opacity-100" : "opacity-0"
-            )}>
-              <span className="text-xs font-normal">patlu475</span>
-              <span className="text-[10px] text-muted-foreground">Free</span>
+              Recent Chats
+            </h3>
+            <div className="mt-2 flex flex-col gap-1">
+              {recentChats.map((chat, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex items-center gap-2 px-2 py-1.5 overflow-hidden",
+                    !isExpanded && "w-0"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "truncate text-xs font-normal text-white/70 transition-opacity duration-200",
+                      isExpanded ? "opacity-100" : "opacity-0 w-0"
+                    )}
+                  >
+                    {chat}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* User Section with Toggle Button when collapsed */}
+          <div
+            className={cn(
+              "shrink-0 pt-2",
+              !isExpanded && "hidden md:block" // Hide on mobile when collapsed, show on desktop
+            )}
+          >
+            <Separator className="mb-2 bg-white/10" />
+            {!isExpanded && (
+              <button
+                onClick={toggleSidebar}
+                className="w-full flex items-center px-2 py-1.5 mb-2 text-white/70"
+              >
+                <ChevronLeft className="h-5 w-5 shrink-0 rotate-180" />
+              </button>
+            )}
+            <div className="flex items-center gap-2 p-2">
+              <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
+                <AvatarFallback className="text-primary-foreground font-normal text-xs bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
+                  P
+                </AvatarFallback>
+              </Avatar>
+              <div
+                className={cn(
+                  "flex flex-col transition-opacity duration-200",
+                  isExpanded ? "opacity-100" : "opacity-0"
+                )}
+              >
+                <span className="text-xs font-normal">patlu475</span>
+                <span className="text-[10px] text-muted-foreground">Free</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Backdrop for mobile */}
+      {isExpanded && (
+        <div
+          className="fixed inset-0 bg-black/50 md:hidden z-40"
+          onClick={toggleSidebar}
+        />
+      )}
+    </>
   );
 }
