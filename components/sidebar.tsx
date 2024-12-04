@@ -14,9 +14,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useUser, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const mainNavItems = [
-  { icon: Plus, label: "New Chat", url: "/new-chat" },
+  { icon: Plus, label: "New Chat", url: "/" },
   { icon: Heart, label: "Favourites", url: "/favourites" },
   { icon: Bookmark, label: "Wishlists", url: "/wishlists" },
   { icon: MessageSquareShare, label: "Feedback", url: "/feedback" },
@@ -31,6 +32,7 @@ const recentChats = [
 
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { user } = useUser();
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
@@ -53,15 +55,14 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile Header - Only visible when sidebar is collapsed */}
-      <div className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 md:hidden",
-        isExpanded && "hidden"
-      )}>
+      <div
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 md:hidden",
+          isExpanded && "hidden"
+        )}
+      >
         {/* Toggle Button */}
-        <button 
-          onClick={toggleSidebar}
-          className="text-white/70"
-        >
+        <button onClick={toggleSidebar} className="text-white/70">
           <MenuIcon className="h-6 w-6" />
         </button>
 
@@ -76,7 +77,14 @@ export function Sidebar() {
         {/* User Avatar */}
         <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
           <AvatarFallback className="text-primary-foreground font-normal text-xs bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
-            P
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                sign-in
+              </SignInButton>
+            </SignedOut>
           </AvatarFallback>
         </Avatar>
       </div>
@@ -136,15 +144,18 @@ export function Sidebar() {
               <div
                 key={index}
                 className={cn(
-                  "flex w-full items-center gap-2 px-2 py-1.5 overflow-hidden",
+                  "w-full px-2 py-1.5 overflow-hidden",
                   index === 0 ? "text-white" : "text-white/70"
                 )}
               >
-                <item.icon className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 shrink-0" />
-                <Link href={item.url} className="min-w-0 overflow-hidden">
+                <Link
+                  href={item.url}
+                  className="flex items-center min-w-0 overflow-hidden"
+                >
+                  <item.icon className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 shrink-0" />
                   <span
                     className={cn(
-                      "truncate text-[11px] md:text-xs lg:text-sm font-normal transition-opacity duration-200 block",
+                      "truncate text-[11px] md:text-xs lg:text-sm font-normal transition-opacity duration-200 ml-2",
                       isExpanded ? "opacity-100" : "opacity-0 w-0"
                     )}
                   >
@@ -207,20 +218,42 @@ export function Sidebar() {
               </button>
             )}
             <div className="flex items-center gap-2 p-2">
-              <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
-                <AvatarFallback className="text-primary-foreground font-normal text-xs bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
-                  P
-                </AvatarFallback>
-              </Avatar>
-              <div
-                className={cn(
-                  "flex flex-col transition-opacity duration-200",
-                  isExpanded ? "opacity-100" : "opacity-0"
+              <SignedIn>
+                <UserButton />
+                {isExpanded && (
+                  <div
+                    className={cn(
+                      "flex flex-col transition-opacity duration-200",
+                      isExpanded ? "opacity-100" : "opacity-0"
+                    )}
+                  >
+                    <span className="text-xs font-normal">{user?.firstName}</span>
+                    <span className="text-[10px] text-muted-foreground">Free</span>
+                  </div>
                 )}
-              >
-                <span className="text-xs font-normal">patlu475</span>
-                <span className="text-[10px] text-muted-foreground">Free</span>
-              </div>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8 bg-gradient-to-br from-violet-500 via-pink-500 to-orange-500">
+                      <AvatarFallback className="text-primary-foreground font-normal text-xs">
+                        Sign In
+                      </AvatarFallback>
+                    </Avatar>
+                    {isExpanded && (
+                      <div
+                        className={cn(
+                          "flex flex-col transition-opacity duration-200",
+                          isExpanded ? "opacity-100" : "opacity-0"
+                        )}
+                      >
+                        <span className="text-xs font-normal">Sign In</span>
+                        <span className="text-[10px] text-muted-foreground">Guest</span>
+                      </div>
+                    )}
+                  </button>
+                </SignInButton>
+              </SignedOut>
             </div>
           </div>
         </div>

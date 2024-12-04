@@ -5,6 +5,14 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Sidebar } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import {
+  ClerkProvider,
+  SignIn,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 const neutralFace = localFont({
   src: [
@@ -33,18 +41,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+  <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <body className={GeistSans.className}>
+
+      
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
             <Sidebar />
-          {children}
+              {children} 
         </ThemeProvider>
       </body>
     </html>
+    </ClerkProvider>
+   
+  
   );
 }
